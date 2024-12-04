@@ -10,6 +10,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
+#include "ShadowPuzzle.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -42,6 +43,7 @@ void APrzestrzenieCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+	CapsuleComponent = GetCapsuleComponent();
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -60,6 +62,10 @@ void APrzestrzenieCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APrzestrzenieCharacter::Look);
+		
+		// Interact
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &APrzestrzenieCharacter::Interact);
+
 	}
 	else
 	{
@@ -67,6 +73,42 @@ void APrzestrzenieCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	}
 }
 
+// Implement Interact logic
+void APrzestrzenieCharacter::Interact()
+{
+	TArray<AActor*> OverlappingActors;
+
+	// Get the overlapping actors
+	if (CapsuleComponent)
+	{
+		CapsuleComponent->GetOverlappingActors(OverlappingActors);
+
+		// Log or process the overlapping actors
+		if (OverlappingActors.Num() > 0)
+		{
+			for (AActor* Actor : OverlappingActors)
+			{
+				if (Actor)
+				{
+					AShadowPuzzle* puzzle = Cast<AShadowPuzzle>(Actor);
+					if (puzzle)
+					{
+						puzzle->PossesMe();
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("No actors overlapping with the capsule."));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("CapsuleComponent is null!"));
+	}
+}
 
 void APrzestrzenieCharacter::Move(const FInputActionValue& Value)
 {
