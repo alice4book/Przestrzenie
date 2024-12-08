@@ -74,7 +74,7 @@ void APrzestrzenieCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 }
 
 // Implement Interact logic
-void APrzestrzenieCharacter::Interact()
+void APrzestrzenieCharacter::Interact(const FInputActionValue& Value)
 {
 	TArray<AActor*> OverlappingActors;
 
@@ -101,12 +101,12 @@ void APrzestrzenieCharacter::Interact()
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("No actors overlapping with the capsule."));
+			UE_LOG(LogTemp, Log, TEXT("Interact No actors overlapping with the capsule."));
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("CapsuleComponent is null!"));
+		UE_LOG(LogTemp, Error, TEXT("Interact CapsuleComponent is null!"));
 	}
 }
 

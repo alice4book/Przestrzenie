@@ -8,6 +8,11 @@
 
 class USpotLightComponent;
 class UBoxComponent;
+class UCameraComponent;
+class UInputComponent;
+class UInputAction;
+class UInputMappingContext;
+struct FInputActionValue;
 
 UCLASS()
 class PRZESTRZENIE_API AShadowPuzzle : public APawn
@@ -15,6 +20,15 @@ class PRZESTRZENIE_API AShadowPuzzle : public APawn
 	GENERATED_BODY()
 
 public:
+
+	/** Move Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* MoveAction;
+
+	/** Interaction Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+
 	// Sets default values for this pawn's properties
 	AShadowPuzzle();
 
@@ -23,8 +37,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	void MoveForward(float Value);
-	void MoveRight(float Value);
+
+	void Rotate(const FInputActionValue& Value);
+
+	void Interact(const FInputActionValue& Value);
 
 	void PossesMe();
 
@@ -33,8 +49,10 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Mesh;
+
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* Volume;
 
@@ -42,8 +60,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Lighting")
 	USpotLightComponent* SpotLight;
 
+	UPROPERTY(EditAnywhere, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* CameraComponent;
 
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	APawn* PreviousPawn;
 
-//	UPROPERTY(EditAnywhere)
-	//UTPPickupComponent* PickupComponent;
+	USceneComponent* Root;
 };

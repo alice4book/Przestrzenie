@@ -5,6 +5,8 @@
 #include "Components/SpotLightComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "Camera/CameraComponent.h"
+#include <EnhancedInputComponent.h>
 //#include "TP_PickUpComponent.h"
 
 // Sets default values
@@ -13,11 +15,21 @@ AShadowPuzzle::AShadowPuzzle()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-    Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-    SetRootComponent(Mesh);
-    SpotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("SpotLight"));
-    SpotLight->SetupAttachment(RootComponent);
+    Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+    RootComponent = Root;
 
+    Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+    Mesh->SetupAttachment(Root);
+    
+    // Create a CameraComponent	
+    CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+    CameraComponent->SetupAttachment(Root);
+    CameraComponent->SetRelativeLocationAndRotation(
+        FVector(-38.f, -43.f, -10.f), 
+        FRotator(0.0f, 35.0f, 0.0f)); // Position the camera
+    
+    SpotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("SpotLight"));
+    SpotLight->SetupAttachment(Root);
     SpotLight->SetIntensity(5000.0f); // Default intensity
     SpotLight->SetLightColor(FLinearColor::White); // Default light color
     SpotLight->SetInnerConeAngle(6.0f); // Inner cone angle
@@ -25,11 +37,8 @@ AShadowPuzzle::AShadowPuzzle()
     SpotLight->SetAttenuationRadius(1000.0f); // How far the light reaches
     SpotLight->SetRelativeLocation(FVector(-200.0f, 0.0f, 0.0f)); // Position it to the right of the actor
 
-    // Create and initialize the pickup component
-    //PickupComponent = CreateDefaultSubobject<UTPPickupComponent>(TEXT("PickupComponent"));
-    //PickupComponent->SetupAttachment(RootComponent); // Attach PickupComponent to the root component
     Volume = CreateDefaultSubobject<UBoxComponent>(TEXT("Volume"));
-
+    Volume->SetupAttachment(Root);
     Volume->InitBoxExtent(FVector(100.0f, 100.0f, 100.0f));
     Volume->SetCollisionProfileName(TEXT("OverlapAll"));
 }
@@ -40,14 +49,15 @@ void AShadowPuzzle::PossesMe()
     APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
     if (PlayerController)
     {
+        PreviousPawn = PlayerController->GetPawn();
         // Possess this actor
         PlayerController->Possess(this);
 
-        UE_LOG(LogTemp, Log, TEXT("%s has been possessed by %s"), *GetName(), *PlayerController->GetName());
+        UE_LOG(LogTemp, Log, TEXT("Interact %s has been possessed by %s"), *GetName(), *PlayerController->GetName());
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("No PlayerController found to possess %s"), *GetName());
+        UE_LOG(LogTemp, Warning, TEXT("Interact No PlayerController found to possess %s"), *GetName());
     }
 }
 
@@ -55,8 +65,6 @@ void AShadowPuzzle::PossesMe()
 void AShadowPuzzle::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 // Called every frame
@@ -69,33 +77,43 @@ void AShadowPuzzle::Tick(float DeltaTime)
 void AShadowPuzzle::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-    // Bind movement inputs
-    PlayerInputComponent->BindAxis("MoveForward", this, &AShadowPuzzle::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &AShadowPuzzle::MoveRight);
-}
-
-void AShadowPuzzle::MoveForward(float Value)
-{
-    if (Value != 0.0f)
+    // Set up action bindings
+    if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
     {
-        // Add movement in the forward direction
-        //AddMovementInput(GetActorForwardVector(), Value);
-        FRotator NewRotation = GetActorRotation();
-        NewRotation.Yaw += FMath::Clamp(NewRotation.Yaw + Value, 0.0f, 360.0f); // Clamp pitch to avoid flipping
-        SetActorRotation(NewRotation);
+        // Moving
+        EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShadowPuzzle::Rotate);
+        // Interact
+        EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AShadowPuzzle::Interact);
     }
 }
 
-void AShadowPuzzle::MoveRight(float Value)
+void AShadowPuzzle::Rotate(const FInputActionValue& Value)
 {
-    if (Value != 0.0f)
+    // input is a Vector2D
+    FVector2D MovementVector = Value.Get<FVector2D>();
+
+    if (Controller != nullptr)
     {
-        // Add movement in the right direction
-        //AddMovementInput(GetActorRightVector(), Value);
-        FRotator NewRotation = GetActorRotation();
-        NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + Value, 0.0f, 360.0f); // Clamp pitch to avoid flipping
-        SetActorRotation(NewRotation);
+        // UE_LOG(LogTemp, Log, TEXT("Rotate"));
+        // Add rotation to the specific mesh component
+        FRotator RotationDelta = FRotator::ZeroRotator;
+
+        // Apply rotation based on input
+        RotationDelta.Yaw = MovementVector.X;  // Rotate around the Z-axis (yaw)
+        RotationDelta.Pitch = MovementVector.Y; // Rotate around the Y-axis (pitch)
+
+        Mesh->AddLocalRotation(RotationDelta);
+    }
+}
+
+void AShadowPuzzle::Interact(const FInputActionValue& Value)
+{
+    APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+    if (PlayerController && PreviousPawn)
+    {
+        // Possess this actor
+        PlayerController->Possess(PreviousPawn);
+        UE_LOG(LogTemp, Log, TEXT("Interact %s has been possessed by %s"), *PreviousPawn->GetName(), *PlayerController->GetName());
     }
 }
 
