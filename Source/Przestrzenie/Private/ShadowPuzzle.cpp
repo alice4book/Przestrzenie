@@ -20,6 +20,9 @@ AShadowPuzzle::AShadowPuzzle()
 
     Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
     Mesh->SetupAttachment(Root);
+
+    Mesh->bCastDynamicShadow = true;
+    Mesh->CastShadow = true;
     
     // Create a CameraComponent	
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
