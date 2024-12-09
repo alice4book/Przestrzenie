@@ -48,10 +48,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	FTimerHandle TimerHandleForSolutionCheck;
 private:
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* Plane;
 
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* Volume;
@@ -60,11 +64,23 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Lighting")
 	USpotLightComponent* SpotLight;
 
-	UPROPERTY(EditAnywhere, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = Camera)
 	UCameraComponent* CameraComponent;
 
-	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere)
 	APawn* PreviousPawn;
 
 	USceneComponent* Root;
+
+	UPROPERTY(EditAnywhere, Category = "Solution")
+	FRotator Solution;
+
+	UPROPERTY(EditAnywhere, Category = "Solution")
+	float PossibleOffset;
+
+	UPROPERTY(EditAnywhere, Category = "Solution")
+	bool bIsSolved;
+
+	UFUNCTION()
+	void CheckSolution();
 };

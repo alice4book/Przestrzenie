@@ -10,7 +10,7 @@
 //#include "TP_PickUpComponent.h"
 
 // Sets default values
-AShadowPuzzle::AShadowPuzzle()
+AShadowPuzzle::AShadowPuzzle() : PreviousPawn(nullptr), Solution(FRotator(0.0f, 0.0f, 0.0f)), PossibleOffset(8.0f), bIsSolved(false)
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -20,9 +20,13 @@ AShadowPuzzle::AShadowPuzzle()
 
     Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
     Mesh->SetupAttachment(Root);
-
     Mesh->bCastDynamicShadow = true;
     Mesh->CastShadow = true;
+
+    Plane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Plane"));
+    Plane->SetupAttachment(Root);
+    Plane->bCastDynamicShadow = false;
+    Plane->CastShadow = false;
     
     // Create a CameraComponent	
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -55,12 +59,6 @@ void AShadowPuzzle::PossesMe()
         PreviousPawn = PlayerController->GetPawn();
         // Possess this actor
         PlayerController->Possess(this);
-
-        UE_LOG(LogTemp, Log, TEXT("Interact %s has been possessed by %s"), *GetName(), *PlayerController->GetName());
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Interact No PlayerController found to possess %s"), *GetName());
     }
 }
 
@@ -92,12 +90,14 @@ void AShadowPuzzle::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 void AShadowPuzzle::Rotate(const FInputActionValue& Value)
 {
+    if (bIsSolved)
+        return;
     // input is a Vector2D
     FVector2D MovementVector = Value.Get<FVector2D>();
 
     if (Controller != nullptr)
     {
-        // UE_LOG(LogTemp, Log, TEXT("Rotate"));
+        GetWorld()->GetTimerManager().ClearTimer(TimerHandleForSolutionCheck);
         // Add rotation to the specific mesh component
         FRotator RotationDelta = FRotator::ZeroRotator;
 
@@ -106,6 +106,8 @@ void AShadowPuzzle::Rotate(const FInputActionValue& Value)
         RotationDelta.Pitch = MovementVector.Y; // Rotate around the Y-axis (pitch)
 
         Mesh->AddLocalRotation(RotationDelta);
+
+        GetWorld()->GetTimerManager().SetTimer(TimerHandleForSolutionCheck, this, &AShadowPuzzle::CheckSolution, 2.0f, false);
     }
 }
 
@@ -116,7 +118,27 @@ void AShadowPuzzle::Interact(const FInputActionValue& Value)
     {
         // Possess this actor
         PlayerController->Possess(PreviousPawn);
-        UE_LOG(LogTemp, Log, TEXT("Interact %s has been possessed by %s"), *PreviousPawn->GetName(), *PlayerController->GetName());
+    }
+}
+
+
+void AShadowPuzzle::CheckSolution()
+{
+    FRotator CurrentRotation = Mesh->GetRelativeRotation();
+    if ((FMath::Abs(CurrentRotation.Pitch - Solution.Pitch) <= PossibleOffset &&
+        FMath::Abs(CurrentRotation.Yaw - Solution.Yaw) <= PossibleOffset &&
+        FMath::Abs(CurrentRotation.Roll - Solution.Roll) <= PossibleOffset)
+        || (FMath::Abs(CurrentRotation.Pitch - Solution.Pitch) <= PossibleOffset &&
+            FMath::Abs(CurrentRotation.Yaw + 180.0f - Solution.Yaw) <= PossibleOffset &&
+            FMath::Abs(CurrentRotation.Roll - Solution.Roll) <= PossibleOffset))
+    {
+        bIsSolved = true;
+        GEngine->AddOnScreenDebugMessage(
+            -1,
+            5.f,
+            FColor::Green,
+            TEXT("You solved it.")
+        );
     }
 }
 
