@@ -18,9 +18,18 @@ public:
 
 	void Rotate();
 
+	// Click event handler
+	UFUNCTION()
+	void OnFuseClicked(AActor* TouchedActor, FKey ButtonPressed);
+
+	int32 GetFuseIndex() const { return FuseIndex; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
+	int32 FuseIndex;
 
 public:	
 	// Called every frame
@@ -29,5 +38,10 @@ public:
 	TArray<FString> Signs;
 
 	int RotationIndex;
+
+private:
+
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* Cube;
 
 };

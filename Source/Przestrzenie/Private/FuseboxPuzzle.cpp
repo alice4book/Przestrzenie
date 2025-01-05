@@ -34,7 +34,7 @@ AFuseboxPuzzle::AFuseboxPuzzle()
 
 	Volume = CreateDefaultSubobject<UBoxComponent>(TEXT("Volume"));
 	Volume->SetupAttachment(Root);
-	Volume->InitBoxExtent(FVector(400.0f, 100.0f, 100.0f));
+	Volume->InitBoxExtent(FVector(100.0f, 100.0f, 100.0f));
 	Volume->SetCollisionProfileName(TEXT("OverlapAll"));
 }
 
@@ -76,10 +76,38 @@ void AFuseboxPuzzle::Interact(const FInputActionValue& Value)
 	}
 }
 
+void AFuseboxPuzzle::CheckSolution()
+{
+}
+
 // Called when the game starts or when spawned
 void AFuseboxPuzzle::BeginPlay()
 {
 	Super::BeginPlay();
+	//SpawnFuses();
+
+	TArray<UChildActorComponent*> ChildActorComponents;
+	GetComponents<UChildActorComponent>(ChildActorComponents);
+
+
+	for (UChildActorComponent* ChildActor : ChildActorComponents)
+	{
+		if (AFuse* Fuse = Cast<AFuse>(ChildActor->GetChildActor()))
+		{
+			if (ChildActor->GetAttachParent() == Cube)
+			{
+				FString FuseName = Fuse->GetName();
+				int32 Index = Fuse->GetFuseIndex();
+				
+				if (Fuses.Num() <= Index)
+				{
+					Fuses.SetNum(Index + 1);
+				}
+				Fuses[Index] = Fuse;
+
+			}
+		}
+	}
 	
 }
 
@@ -90,5 +118,28 @@ void AFuseboxPuzzle::Tick(float DeltaTime)
 
 }
 
+void AFuseboxPuzzle::SpawnFuses()
+{
+	FVector CubeLocation = GetActorLocation();
+	FVector FrontFaceOffset = FVector(5.0f, 0.0f, 0.0f);
 
+	FVector StartPosition = CubeLocation + FrontFaceOffset + FVector(0.0f, -FuseSpacingHorizontal, FuseSpacingVertical);
 
+	for (int Row = 0; Row < 3; ++Row)
+	{
+		for (int Column = 0; Column < 2; ++Column)
+		{
+			FVector FusePosition = StartPosition;
+			FusePosition.Y += Column * FuseSpacingHorizontal;
+			FusePosition.Z -= Row * FuseSpacingVertical;
+
+			FRotator FuseRotation = FRotator(0.0f, 0.0f, 0.0f);
+
+			AFuse* NewFuse = GetWorld()->SpawnActor<AFuse>(AFuse::StaticClass(), FusePosition, FuseRotation);
+			if (NewFuse)
+			{
+				Fuses.Add(NewFuse);
+			}
+		}
+	}
+}

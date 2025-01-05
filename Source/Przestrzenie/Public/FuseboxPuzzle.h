@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Fuse.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "FuseboxPuzzle.generated.h"
@@ -34,6 +35,10 @@ public:
 
 	void Interact(const FInputActionValue& Value);
 
+	void CheckSolution();
+
+	void SpawnFuses();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -57,4 +62,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	APawn* PreviousPawn;
+
+	// List of spawned fuses
+	TArray<AFuse*> Fuses;
+
+	// Adjust spacing between fuses
+	const float FuseSpacingHorizontal = 50.0f;
+	const float FuseSpacingVertical = 70.0f;
 };
