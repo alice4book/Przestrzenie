@@ -11,6 +11,7 @@
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
 #include "ShadowPuzzle.h"
+#include "FuseboxPuzzle.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -92,6 +93,13 @@ void APrzestrzenieCharacter::Interact(const FInputActionValue& Value)
 					if (puzzle)
 					{
 						puzzle->PossesMe();
+						break;
+					}
+
+					AFuseboxPuzzle* fuseboxPuzzle = Cast<AFuseboxPuzzle>(Actor);
+					if (fuseboxPuzzle)
+					{
+						fuseboxPuzzle->PossesMe();
 						break;
 					}
 				}

@@ -19,8 +19,20 @@ class PRZESTRZENIE_API AFuseboxPuzzle : public APawn
 	GENERATED_BODY()
 	
 public:	
+
+	/** Interaction Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+
 	// Sets default values for this actor's properties
 	AFuseboxPuzzle();
+
+	void PossesMe();
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void Interact(const FInputActionValue& Value);
 
 protected:
 	// Called when the game starts or when spawned
@@ -40,4 +52,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Camera)
 	UCameraComponent* CameraComponent;
 
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* Volume;
+
+	UPROPERTY(VisibleAnywhere)
+	APawn* PreviousPawn;
 };
