@@ -78,9 +78,53 @@ void AFuseboxPuzzle::Interact(const FInputActionValue& Value)
 
 void AFuseboxPuzzle::CheckSolution()
 {
+
+	int32 NumberOfComparisons = 0;
+	int32 CorrectComparisons = 0;
 	for (AFuse* Fuse : Fuses)
 	{
+		for (const TPair<int32, int32>& NeighbourInfo : Fuse->NeighbourFuses)
+		{
+			int32 NeighbourIndex = NeighbourInfo.Key;
+			int32 CurrentSide = NeighbourInfo.Value;
 
+			AFuse* NeighbourFuse = Fuses[NeighbourIndex];
+			int32 OppositeSide = (CurrentSide + 2) % 4;
+
+			NumberOfComparisons += 1;
+			if (Fuse->GetSignValue(CurrentSide) == NeighbourFuse->GetSignValue(OppositeSide))
+			{
+				CorrectComparisons += 1;
+			}
+
+		}
+	}
+	/*
+	FString Message = TEXT("Correct Solutions: ") + FString::Printf(TEXT("%d"), CorrectComparisons);
+	FString Message2 = TEXT("All Solutions: ") + FString::Printf(TEXT("%d"), NumberOfComparisons);
+
+	GEngine->AddOnScreenDebugMessage(
+		-1,
+		5.f,
+		FColor::Green,
+		Message
+	);
+
+	GEngine->AddOnScreenDebugMessage(
+		-1,
+		5.f,
+		FColor::Green,
+		Message2
+	);
+	*/
+	if (NumberOfComparisons == CorrectComparisons)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			5.f,
+			FColor::Green,
+			TEXT("You solved it.")
+		);
 	}
 }
 
@@ -110,6 +154,14 @@ void AFuseboxPuzzle::BeginPlay()
 				Fuses[Index] = Fuse;
 
 			}
+		}
+	}
+
+	for (AFuse* Fuse : Fuses)
+	{
+		if (Fuse)
+		{
+			Fuse->OnRotate.AddDynamic(this, &AFuseboxPuzzle::CheckSolution);
 		}
 	}
 	

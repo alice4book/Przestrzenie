@@ -15,10 +15,10 @@ public:
 	// Sets default values for this actor's properties
 	ASign();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sign")
 	int32 SignVariant;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sign")
 	TArray<UMaterialInstance*> MaterialVariants;
 
 	int32 GetSignIndex() const { return SignIndex; }
@@ -31,7 +31,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sign")
 	int32 SignIndex;
 
 private:

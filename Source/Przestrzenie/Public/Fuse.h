@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "Fuse.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFuseRotatedDelegate);
+
 UCLASS()
 class PRZESTRZENIE_API AFuse : public AActor
 {
@@ -17,13 +19,17 @@ public:
 	AFuse();
 	AFuse(int up, int right, int down, int left);
 
+	UPROPERTY()
+	FOnFuseRotatedDelegate OnRotate;
+
 	void Rotate();
 
-	// Click event handler
 	UFUNCTION()
 	void OnFuseClicked(AActor* TouchedActor, FKey ButtonPressed);
 
 	int32 GetFuseIndex() const { return FuseIndex; }
+
+	int32 GetSignValue(int32 Side) const { return CurrentRotationSigns[Side]->SignVariant; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -36,16 +42,18 @@ protected:
 	TArray<int> SignValues;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
-	TArray<bool> isChecked;
+	TArray<ASign*> Signs;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
-	TArray<ASign*> Signs;
+	TArray<ASign*> CurrentRotationSigns;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse",
+		meta = (DisplayName = "Neighbour Fuse Index, Orientation(up0,right1,down2,left3)"))
+	TMap<int32, int32> NeighbourFuses;
 
 	int RotationIndex;
 

@@ -35,6 +35,7 @@ public:
 
 	void Interact(const FInputActionValue& Value);
 
+	UFUNCTION()
 	void CheckSolution();
 
 	void SpawnFuses();
@@ -63,10 +64,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	APawn* PreviousPawn;
 
-	// List of spawned fuses
 	TArray<AFuse*> Fuses;
-
-	// Adjust spacing between fuses
 	const float FuseSpacingHorizontal = 50.0f;
 	const float FuseSpacingVertical = 70.0f;
 };

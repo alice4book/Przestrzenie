@@ -19,7 +19,7 @@ AFuse::AFuse()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	SignValues = { 1,2,3,4};
-	isChecked = {false,false,false,false};
+	//isChecked = {false,false,false,false};
 	RotationIndex = 0;
 }
 
@@ -34,26 +34,30 @@ AFuse::AFuse(int up, int right, int down, int left)
 	Cube->bCastDynamicShadow = true;
 	Cube->CastShadow = true;
 
-
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	RotationIndex = 0;
 	SignValues = {up, right, down, left};
-	isChecked = { false,false,false,false };
+	//isChecked = { false,false,false,false };
 }
 
 void AFuse::Rotate()
 {
 	RotationIndex = (RotationIndex + 1) % 4;
-
-	// Calculate the new rotation angle
 	float NewRoll = RotationIndex * 90.0f;
-
-	// Update the actor's rotation
 	FRotator NewRotation = GetActorRotation();
 	NewRotation.Roll = NewRoll;
 	SetActorRotation(NewRotation);
+
+	
+	for (int32 i = 0; i < Signs.Num(); i++)
+	{
+		int32 NewIndex = (i + RotationIndex) % Signs.Num();
+		CurrentRotationSigns[NewIndex] = Signs[i];
+	}
+
+	OnRotate.Broadcast();
 
 }
 
@@ -62,7 +66,6 @@ void AFuse::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// Bind the OnClicked event
 	OnClicked.AddDynamic(this, &AFuse::OnFuseClicked);
 
 	TArray<UChildActorComponent*> ChildActorComponents;
@@ -91,6 +94,8 @@ void AFuse::BeginPlay()
 			}
 		}
 	}
+
+	CurrentRotationSigns = Signs;
 }
 
 // Called every frame
