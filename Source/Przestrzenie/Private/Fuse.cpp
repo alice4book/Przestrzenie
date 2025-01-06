@@ -18,12 +18,12 @@ AFuse::AFuse()
 
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	Signs = { "A","B","C","D"};
-
+	SignValues = { 1,2,3,4};
+	isChecked = {false,false,false,false};
 	RotationIndex = 0;
 }
 
-AFuse::AFuse(FString up, FString right, FString down, FString left)
+AFuse::AFuse(int up, int right, int down, int left)
 {
 	Cube = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cube"));
 	//Cube->SetupAttachment(Root);
@@ -39,7 +39,8 @@ AFuse::AFuse(FString up, FString right, FString down, FString left)
 	PrimaryActorTick.bCanEverTick = true;
 
 	RotationIndex = 0;
-	Signs = { up,right,down,left };
+	SignValues = {up, right, down, left};
+	isChecked = { false,false,false,false };
 }
 
 void AFuse::Rotate()
@@ -63,6 +64,33 @@ void AFuse::BeginPlay()
 	
 	// Bind the OnClicked event
 	OnClicked.AddDynamic(this, &AFuse::OnFuseClicked);
+
+	TArray<UChildActorComponent*> ChildActorComponents;
+	GetComponents<UChildActorComponent>(ChildActorComponents);
+
+
+	for (UChildActorComponent* ChildActor : ChildActorComponents)
+	{
+		if (ASign* Sign = Cast<ASign>(ChildActor->GetChildActor()))
+		{
+			if (ChildActor->GetAttachParent() == Cube)
+			{
+				FString SignName = Sign->GetName();
+				int32 Index = Sign->GetSignIndex();
+
+				if (Signs.Num() <= Index)
+				{
+					Signs.SetNum(Index + 1);
+				}
+
+				//UE_LOG(LogTemp, Warning,TEXT("Index: %d"), SignValues[Index]-1);
+				Sign->SetSignVariant(SignValues[Index]-1);
+				Sign->SetSignMaterial();
+				Signs[Index] = Sign;
+
+			}
+		}
+	}
 }
 
 // Called every frame

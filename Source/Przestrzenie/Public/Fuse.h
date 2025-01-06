@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Sign.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Fuse.generated.h"
@@ -14,7 +15,7 @@ class PRZESTRZENIE_API AFuse : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AFuse();
-	AFuse(FString up, FString right, FString down, FString left);
+	AFuse(int up, int right, int down, int left);
 
 	void Rotate();
 
@@ -31,11 +32,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
 	int32 FuseIndex;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
+	TArray<int> SignValues;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
+	TArray<bool> isChecked;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
+	TArray<ASign*> Signs;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	TArray<FString> Signs;
+
 
 	int RotationIndex;
 

@@ -78,6 +78,10 @@ void AFuseboxPuzzle::Interact(const FInputActionValue& Value)
 
 void AFuseboxPuzzle::CheckSolution()
 {
+	for (AFuse* Fuse : Fuses)
+	{
+
+	}
 }
 
 // Called when the game starts or when spawned
@@ -120,6 +124,7 @@ void AFuseboxPuzzle::Tick(float DeltaTime)
 
 void AFuseboxPuzzle::SpawnFuses()
 {
+	/*
 	FVector CubeLocation = GetActorLocation();
 	FVector FrontFaceOffset = FVector(5.0f, 0.0f, 0.0f);
 
@@ -142,4 +147,5 @@ void AFuseboxPuzzle::SpawnFuses()
 			}
 		}
 	}
+	*/
 }
