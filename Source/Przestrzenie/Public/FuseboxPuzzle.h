@@ -25,6 +25,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
+	TArray<AActor*> ConnectedLights;
+
 	// Sets default values for this actor's properties
 	AFuseboxPuzzle();
 

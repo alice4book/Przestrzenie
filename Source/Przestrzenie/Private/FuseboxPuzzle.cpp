@@ -126,6 +126,18 @@ void AFuseboxPuzzle::CheckSolution()
 			TEXT("You solved it.")
 		);
 	}
+
+	for (AActor* Light : ConnectedLights)
+	{
+		if (Light)
+		{
+			FName TurnOnEventName(TEXT("TurnOnLight"));
+			if (Light->FindFunction(TurnOnEventName))
+			{
+				Light->ProcessEvent(Light->FindFunction(TurnOnEventName), nullptr);
+			}
+		}
+	}
 }
 
 // Called when the game starts or when spawned
