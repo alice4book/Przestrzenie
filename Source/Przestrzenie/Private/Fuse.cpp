@@ -96,6 +96,13 @@ void AFuse::BeginPlay()
 	}
 
 	CurrentRotationSigns = Signs;
+
+	int randNum = (rand() % 4) + 1;
+
+	for (int i = 0; i < randNum; ++i)
+	{
+		Rotate();
+	}
 }
 
 // Called every frame
