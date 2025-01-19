@@ -12,6 +12,7 @@
 #include "Engine/LocalPlayer.h"
 #include "ShadowPuzzle.h"
 #include "FuseboxPuzzle.h"
+#include "MyPickableItem.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -100,6 +101,12 @@ void APrzestrzenieCharacter::Interact(const FInputActionValue& Value)
 					if (fuseboxPuzzle)
 					{
 						fuseboxPuzzle->PossesMe();
+						break;
+					}
+
+					AMyPickableItem* MyItem = Cast<AMyPickableItem>(Actor);
+					if (MyItem) {
+						MyItem->Interact();
 						break;
 					}
 				}

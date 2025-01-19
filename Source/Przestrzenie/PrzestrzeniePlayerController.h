@@ -15,7 +15,11 @@ UCLASS()
 class PRZESTRZENIE_API APrzestrzeniePlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPROPERTY(EditAnywhere)
+
+	TArray<int32> ItemArray; //Tabela na itemy
 protected:
 
 	/** Input Mapping Context to be used for player input */
