@@ -102,12 +102,12 @@ void AShadowPuzzle::Rotate(const FInputActionValue& Value)
         FRotator RotationDelta = FRotator::ZeroRotator;
 
         // Apply rotation based on input
-        RotationDelta.Yaw = MovementVector.X;  // Rotate around the Z-axis (yaw)
-        RotationDelta.Pitch = MovementVector.Y; // Rotate around the Y-axis (pitch)
+        RotationDelta.Yaw = -MovementVector.X;  // Rotate around the Z-axis (yaw)
+        RotationDelta.Pitch = -MovementVector.Y; // Rotate around the Y-axis (pitch)
 
         Mesh->AddLocalRotation(RotationDelta);
 
-        GetWorld()->GetTimerManager().SetTimer(TimerHandleForSolutionCheck, this, &AShadowPuzzle::CheckSolution, 2.0f, false);
+        GetWorld()->GetTimerManager().SetTimer(TimerHandleForSolutionCheck, this, &AShadowPuzzle::CheckSolution, 1.0f, false);
     }
 }
 
