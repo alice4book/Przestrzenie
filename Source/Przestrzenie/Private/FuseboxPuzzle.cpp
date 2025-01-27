@@ -137,6 +137,8 @@ void AFuseboxPuzzle::CheckSolution()
 				}
 			}
 		}
+
+		isSolved = true;
 	}
 
 
