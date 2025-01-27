@@ -36,7 +36,7 @@ void AMyPickableItem::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void AMyPickableItem::Interact()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("To jest komunikat na ekranie!"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Przedmiot dodany do ekwipunku!"));
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
