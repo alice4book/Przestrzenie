@@ -6,9 +6,13 @@
 // Sets default values
 AFuse::AFuse()
 {
+
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = Root;
+
 	Cube = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cube"));
-	//Cube->SetupAttachment(Root);
-	UStaticMesh* CubeMesh = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("/Engine/BasicShapes/Cube.Cube")).Object;
+	Cube->SetupAttachment(Root);
+	UStaticMesh* CubeMesh = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("/Engine/BasicShapes/Cylinder.Cylinder")).Object;
 
 	// Set the component's mesh
 	Cube->SetStaticMesh(CubeMesh);
@@ -21,6 +25,12 @@ AFuse::AFuse()
 	SignValues = { 1,2,3,4};
 	//isChecked = {false,false,false,false};
 	RotationIndex = 0;
+
+
+	// Default values
+	RotationSpeed = 2.0f;  // Rotation speed multiplier
+	bIsRotating = false;
+	RotationAlpha = 0.0f;
 }
 
 AFuse::AFuse(int up, int right, int down, int left)
@@ -103,6 +113,10 @@ void AFuse::BeginPlay()
 	{
 		Rotate();
 	}
+
+	// Initialize the target rotation
+	TargetRotation = GetActorRotation();
+	StartRotation = GetActorRotation();
 }
 
 // Called every frame
@@ -110,13 +124,51 @@ void AFuse::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bIsRotating)
+	{
+		// Smoothly interpolate rotation using Lerp
+		RotationAlpha += DeltaTime * RotationSpeed;
+		if (RotationAlpha >= 1.0f)
+		{
+			RotationAlpha = 1.0f;
+			bIsRotating = false;
+			RotationIndex = (RotationIndex + 1) % 4;
+			for (int32 i = 0; i < Signs.Num(); i++)
+			{
+				int32 NewIndex = (i + RotationIndex) % Signs.Num();
+				CurrentRotationSigns[NewIndex] = Signs[i];
+			}
+
+			OnRotate.Broadcast();
+		}
+
+		FRotator NewRotation = FRotator(StartRotation.Pitch, StartRotation.Yaw, FMath::Lerp(StartRotation.Roll, TargetRotation.Roll, RotationAlpha));
+		SetActorRotation(NewRotation);
+	}
+
 }
 
 void AFuse::OnFuseClicked(AActor* TouchedActor, FKey ButtonPressed)
 {
 	if (TouchedActor == this)
 	{
-		Rotate();
+		if (!bIsRotating)
+		{
+			// Set up rotation target
+			StartRotation = FRotator(StartRotation.Pitch, StartRotation.Yaw, GetActorRotation().Roll);
+			TargetRotation = StartRotation + FRotator(0.0f, 0.0f, 90.0f); // Rotate 45 degrees in the Yaw axis
+			RotationAlpha = 0.0f;
+			bIsRotating = true;
+
+			// Display debug messages on the screen
+			FString StartRotationText = FString::Printf(TEXT("Start Rotation - Pitch: %.2f, Yaw: %.2f, Roll: %.2f"),
+				StartRotation.Pitch, StartRotation.Yaw, StartRotation.Roll);
+			FString TargetRotationText = FString::Printf(TEXT("Target Rotation - Pitch: %.2f, Yaw: %.2f, Roll: %.2f"),
+				TargetRotation.Pitch, TargetRotation.Yaw, TargetRotation.Roll);
+
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, StartRotationText);
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TargetRotationText);
+		}
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Fuse clicked and rotated!"));
 	}
 }
