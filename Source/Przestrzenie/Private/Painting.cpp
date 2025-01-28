@@ -22,22 +22,19 @@ APainting::APainting()
 
 }
 
-// Called when the game starts or when spawned
 void APainting::BeginPlay()
 {
 	Super::BeginPlay();
 
-    Material = MeshComponent->GetMaterial(0); // Slot 0 of the material
+    Material = MeshComponent->GetMaterial(0); 
     if (Material)
     {
         DynamicMaterial = Cast<UMaterialInstanceDynamic>(Material);
 
-        // If it's not already a dynamic material, create one
         if (!DynamicMaterial)
         {
             DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
 
-            // Assign the dynamic material back to the mesh
             MeshComponent->SetMaterial(0, DynamicMaterial);
         }
 
