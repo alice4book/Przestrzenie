@@ -6,14 +6,13 @@
 // Sets default values
 APainting::APainting()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+
 	PrimaryActorTick.bCanEverTick = true;
 
     MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cube"));
     //MeshComponent->SetupAttachment(Root);
     UStaticMesh* CubeMesh = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("/Engine/BasicShapes/Cube.Cube")).Object;
 
-    // Set the component's mesh
     MeshComponent->SetStaticMesh(CubeMesh);
     MeshComponent->bCastDynamicShadow = true;
     MeshComponent->CastShadow = true;

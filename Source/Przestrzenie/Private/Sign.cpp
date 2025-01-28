@@ -13,7 +13,6 @@ ASign::ASign()
 	//Cube->SetupAttachment(Root);
 	UStaticMesh* CubeMesh = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("/Engine/BasicShapes/Cylinder.Cylinder")).Object;
 
-	// Set the component's mesh
 	Cube->SetStaticMesh(CubeMesh);
 	Cube->bCastDynamicShadow = true;
 	Cube->CastShadow = true;

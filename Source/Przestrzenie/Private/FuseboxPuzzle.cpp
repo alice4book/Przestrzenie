@@ -40,12 +40,10 @@ AFuseboxPuzzle::AFuseboxPuzzle()
 
 void AFuseboxPuzzle::PossesMe()
 {
-	// Get the player controller
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
 		PreviousPawn = PlayerController->GetPawn();
-		// Possess this actor
 		PlayerController->Possess(this);
 
 		PlayerController->bShowMouseCursor = true;
@@ -71,7 +69,7 @@ void AFuseboxPuzzle::Interact(const FInputActionValue& Value)
 	{
 		PlayerController->bShowMouseCursor = false;
 		PlayerController->bEnableClickEvents = false;
-		// Possess this actor
+
 		PlayerController->Possess(PreviousPawn);
 	}
 }
@@ -99,24 +97,7 @@ void AFuseboxPuzzle::CheckSolution()
 
 		}
 	}
-	/*
-	FString Message = TEXT("Correct Solutions: ") + FString::Printf(TEXT("%d"), CorrectComparisons);
-	FString Message2 = TEXT("All Solutions: ") + FString::Printf(TEXT("%d"), NumberOfComparisons);
-
-	GEngine->AddOnScreenDebugMessage(
-		-1,
-		5.f,
-		FColor::Green,
-		Message
-	);
-
-	GEngine->AddOnScreenDebugMessage(
-		-1,
-		5.f,
-		FColor::Green,
-		Message2
-	);
-	*/
+	
 	if (NumberOfComparisons == CorrectComparisons)
 	{
 		GEngine->AddOnScreenDebugMessage(
@@ -148,7 +129,6 @@ void AFuseboxPuzzle::CheckSolution()
 void AFuseboxPuzzle::BeginPlay()
 {
 	Super::BeginPlay();
-	//SpawnFuses();
 
 	TArray<UChildActorComponent*> ChildActorComponents;
 	GetComponents<UChildActorComponent>(ChildActorComponents);

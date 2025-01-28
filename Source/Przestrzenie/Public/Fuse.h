@@ -64,20 +64,15 @@ private:
 
 	USceneComponent* Root;
 
-	// Target rotation
 	FRotator TargetRotation;
 
-	// Speed of rotation
 	UPROPERTY(EditAnywhere)
 	float RotationSpeed;
 
-	// Flag to indicate if rotation is in progress
-	bool bIsRotating;
+	bool IsRotating;
 
-	// Current rotation progress (0 to 1)
 	float RotationAlpha;
 
-	// Initial rotation for interpolation
 	FRotator StartRotation;
 
 };
