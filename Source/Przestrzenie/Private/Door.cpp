@@ -13,11 +13,13 @@ ADoor::ADoor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	//RootComponent = Root;
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = Root;
 
 	Cube = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cube"));
-	RootComponent = Cube;
+	//RootComponent = Cube;
+	Cube->SetupAttachment(Root);
+
 	UStaticMesh* CubeMesh = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("/Engine/BasicShapes/Cube.Cube")).Object;
 
 	Cube->SetStaticMesh(CubeMesh);
@@ -59,7 +61,7 @@ void ADoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StartRotation = GetActorRotation();
+	StartRotation = Cube->GetRelativeRotation();
 	
 }
 
@@ -79,7 +81,7 @@ void ADoor::Tick(float DeltaTime)
 		}
 
 		FRotator NewRotation = FRotator(StartRotation.Pitch, FMath::Lerp(StartRotation.Yaw, TargetRotation.Yaw, RotationAlpha), StartRotation.Roll);
-		SetActorRotation(NewRotation);
+		Cube->SetRelativeRotation(NewRotation);
 	}
 
 }
