@@ -21,7 +21,6 @@ class PRZESTRZENIE_API AFuseboxPuzzle : public APawn
 	
 public:	
 
-	/** Interaction Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
@@ -33,7 +32,6 @@ public:
 
 	void PossesMe();
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void Interact(const FInputActionValue& Value);

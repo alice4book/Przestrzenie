@@ -13,6 +13,7 @@
 #include "ShadowPuzzle.h"
 #include "FuseboxPuzzle.h"
 #include "MyPickableItem.h"
+#include "Door.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -107,6 +108,13 @@ void APrzestrzenieCharacter::Interact(const FInputActionValue& Value)
 					AMyPickableItem* MyItem = Cast<AMyPickableItem>(Actor);
 					if (MyItem) {
 						MyItem->Interact();
+						break;
+					}
+
+					ADoor* Door = Cast<ADoor>(Actor);
+					if (Door)
+					{
+						Door->Interact();
 						break;
 					}
 				}

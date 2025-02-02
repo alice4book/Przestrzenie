@@ -3,7 +3,6 @@
 
 #include "Fuse.h"
 
-// Sets default values
 AFuse::AFuse()
 {
 
@@ -14,7 +13,6 @@ AFuse::AFuse()
 	Cube->SetupAttachment(Root);
 	UStaticMesh* CubeMesh = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("/Engine/BasicShapes/Cylinder.Cylinder")).Object;
 
-	// Set the component's mesh
 	Cube->SetStaticMesh(CubeMesh);
 	Cube->bCastDynamicShadow = true;
 	Cube->CastShadow = true;
@@ -23,13 +21,10 @@ AFuse::AFuse()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	SignValues = { 1,2,3,4};
-	//isChecked = {false,false,false,false};
 	RotationIndex = 0;
 
-
-	// Default values
-	RotationSpeed = 2.0f;  // Rotation speed multiplier
-	bIsRotating = false;
+	RotationSpeed = 2.0f;
+	IsRotating = false;
 	RotationAlpha = 0.0f;
 }
 
@@ -39,7 +34,6 @@ AFuse::AFuse(int up, int right, int down, int left)
 	//Cube->SetupAttachment(Root);
 	UStaticMesh* CubeMesh = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("/Engine/BasicShapes/Cube.Cube")).Object;
 
-	// Set the component's mesh
 	Cube->SetStaticMesh(CubeMesh);
 	Cube->bCastDynamicShadow = true;
 	Cube->CastShadow = true;
@@ -49,7 +43,6 @@ AFuse::AFuse(int up, int right, int down, int left)
 
 	RotationIndex = 0;
 	SignValues = {up, right, down, left};
-	//isChecked = { false,false,false,false };
 }
 
 void AFuse::Rotate()
@@ -96,7 +89,6 @@ void AFuse::BeginPlay()
 					Signs.SetNum(Index + 1);
 				}
 
-				//UE_LOG(LogTemp, Warning,TEXT("Index: %d"), SignValues[Index]-1);
 				Sign->SetSignVariant(SignValues[Index]-1);
 				Sign->SetSignMaterial();
 				Signs[Index] = Sign;
@@ -114,7 +106,6 @@ void AFuse::BeginPlay()
 		Rotate();
 	}
 
-	// Initialize the target rotation
 	TargetRotation = GetActorRotation();
 	StartRotation = GetActorRotation();
 }
@@ -124,14 +115,13 @@ void AFuse::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bIsRotating)
+	if (IsRotating)
 	{
-		// Smoothly interpolate rotation using Lerp
 		RotationAlpha += DeltaTime * RotationSpeed;
 		if (RotationAlpha >= 1.0f)
 		{
 			RotationAlpha = 1.0f;
-			bIsRotating = false;
+			IsRotating = false;
 			RotationIndex = (RotationIndex + 1) % 4;
 			for (int32 i = 0; i < Signs.Num(); i++)
 			{
@@ -152,23 +142,13 @@ void AFuse::OnFuseClicked(AActor* TouchedActor, FKey ButtonPressed)
 {
 	if (TouchedActor == this)
 	{
-		if (!bIsRotating)
+		if (!IsRotating)
 		{
-			// Set up rotation target
 			StartRotation = FRotator(StartRotation.Pitch, StartRotation.Yaw, GetActorRotation().Roll);
-			TargetRotation = StartRotation + FRotator(0.0f, 0.0f, 90.0f); // Rotate 45 degrees in the Yaw axis
+			TargetRotation = StartRotation + FRotator(0.0f, 0.0f, 90.0f);
 			RotationAlpha = 0.0f;
-			bIsRotating = true;
+			IsRotating = true;
 
-			// Display debug messages on the screen
-			FString StartRotationText = FString::Printf(TEXT("Start Rotation - Pitch: %.2f, Yaw: %.2f, Roll: %.2f"),
-				StartRotation.Pitch, StartRotation.Yaw, StartRotation.Roll);
-			FString TargetRotationText = FString::Printf(TEXT("Target Rotation - Pitch: %.2f, Yaw: %.2f, Roll: %.2f"),
-				TargetRotation.Pitch, TargetRotation.Yaw, TargetRotation.Roll);
-
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, StartRotationText);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TargetRotationText);
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Fuse clicked and rotated!"));
 	}
 }
