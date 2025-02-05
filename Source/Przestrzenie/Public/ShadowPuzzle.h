@@ -29,6 +29,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
 
+	/** Interaction Input Change Object */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ChangeObjectAction;
+
 	// Sets default values for this pawn's properties
 	AShadowPuzzle();
 
@@ -42,6 +46,8 @@ public:
 
 	void Interact(const FInputActionValue& Value);
 
+	void ChangeObject(const FInputActionValue& Value);
+
 	void PossesMe();
 
 protected:
@@ -52,7 +58,16 @@ protected:
 private:
 
 	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* Mesh;
+	UStaticMeshComponent* CurrentMesh;
+
+	UPROPERTY(EditAnywhere, Category = "ShadowPuzzle")
+	UStaticMesh* Mesh1;
+
+	UPROPERTY(EditAnywhere, Category = "ShadowPuzzle")
+	UStaticMesh* Mesh2;
+
+	UPROPERTY(EditAnywhere, Category = "ShadowPuzzle")
+	UStaticMesh* Mesh3;
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Plane;
@@ -80,6 +95,8 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Solution")
 	bool bIsSolved;
+
+	int32 CurrentIndex = 0;
 
 	UFUNCTION()
 	void CheckSolution();
