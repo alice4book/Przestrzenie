@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FuseboxPuzzle.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -29,11 +28,16 @@ public:
 
 	void ChangeMaterialParameters(bool moving);
 
+	/*
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
 	AFuseboxPuzzle* FuseboxPuzzle;
+	*/
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Painting")
 	bool isMoving = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Painting")
+	bool toDissapear = false;
 
 	UMaterialInstanceDynamic* DynamicMaterial;
 

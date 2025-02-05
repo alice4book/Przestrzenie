@@ -48,11 +48,13 @@ void APainting::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    /*
 	if (FuseboxPuzzle->isSolved && isMoving)
 	{
 		isMoving = false;
         ChangeMaterialParameters(false);
 	}
+    */
 }
 
 

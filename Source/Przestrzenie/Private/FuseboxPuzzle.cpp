@@ -119,6 +119,27 @@ void AFuseboxPuzzle::CheckSolution()
 			}
 		}
 
+		for (int32 i = Paintings.Num() - 1; i >= 0; --i)
+		{
+			APainting* Painting = Paintings[i];
+			if (Painting)
+			{
+				Painting->isMoving = false;
+				Painting->ChangeMaterialParameters(false);
+
+				if (Painting->toDissapear)
+				{
+					Paintings.RemoveAt(i); 
+					Painting->Destroy();
+				}
+			}
+		}
+
+		if (DoorBlock)
+		{
+			DoorBlock->Destroy();
+		}
+
 		isSolved = true;
 	}
 

@@ -2,7 +2,10 @@
 
 #pragma once
 
+#include "Engine/BlockingVolume.h"
+#include "Components/BrushComponent.h"
 #include "Fuse.h"
+#include "Painting.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "FuseboxPuzzle.generated.h"
@@ -26,6 +29,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
 	TArray<AActor*> ConnectedLights;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
+	TArray<APainting*> Paintings;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
+	ABlockingVolume* DoorBlock;
 
 	// Sets default values for this actor's properties
 	AFuseboxPuzzle();
@@ -70,4 +79,6 @@ private:
 	TArray<AFuse*> Fuses;
 	const float FuseSpacingHorizontal = 50.0f;
 	const float FuseSpacingVertical = 70.0f;
+
+
 };
