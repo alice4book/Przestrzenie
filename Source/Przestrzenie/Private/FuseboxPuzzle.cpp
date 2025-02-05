@@ -2,6 +2,12 @@
 
 
 #include "FuseboxPuzzle.h"
+#include "../PrzestrzenieCharacter.h"
+#include "../PrzestrzeniePlayerController.h"
+#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Components/PostProcessComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Camera/CameraComponent.h"
@@ -140,6 +146,8 @@ void AFuseboxPuzzle::CheckSolution()
 			DoorBlock->Destroy();
 		}
 
+		RemoveDarkness();
+
 		isSolved = true;
 	}
 
@@ -189,6 +197,29 @@ void AFuseboxPuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AFuseboxPuzzle::RemoveDarkness()
+{
+	APawn* PlayerPawn = PreviousPawn;
+	if (PlayerPawn)
+	{
+		APrzestrzenieCharacter* PlayerCharacter = Cast<APrzestrzenieCharacter>(PlayerPawn);
+		if (PlayerCharacter)
+		{
+			UPostProcessComponent* PostProcessComponent = PlayerCharacter->FindComponentByClass<UPostProcessComponent>();
+
+			if (PostProcessComponent)
+			{
+				TArray<FWeightedBlendable>& Materials = PostProcessComponent->Settings.WeightedBlendables.Array;
+
+				if (Materials.Num() > 0)
+				{
+					Materials.RemoveAt(0);
+				}
+			}
+		}
+	}
 }
 
 void AFuseboxPuzzle::SpawnFuses()
