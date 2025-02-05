@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Camera/CameraComponent.h"
 #include <EnhancedInputComponent.h>
+#include <Przestrzenie/PrzestrzeniePlayerController.h>
 //#include "TP_PickUpComponent.h"
 
 // Sets default values
@@ -18,10 +19,10 @@ AShadowPuzzle::AShadowPuzzle() : PreviousPawn(nullptr), Solution(FRotator(0.0f, 
     Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
     RootComponent = Root;
 
-    Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-    Mesh->SetupAttachment(Root);
-    Mesh->bCastDynamicShadow = true;
-    Mesh->CastShadow = true;
+    CurrentMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+    CurrentMesh->SetupAttachment(Root);
+    CurrentMesh->bCastDynamicShadow = true;
+    CurrentMesh->CastShadow = true;
 
     Plane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Plane"));
     Plane->SetupAttachment(Root);
@@ -85,6 +86,8 @@ void AShadowPuzzle::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
         EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShadowPuzzle::Rotate);
         // Interact
         EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AShadowPuzzle::Interact);
+        // Change object
+        EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AShadowPuzzle::ChangeObject);
     }
 }
 
@@ -105,7 +108,7 @@ void AShadowPuzzle::Rotate(const FInputActionValue& Value)
         RotationDelta.Yaw = -MovementVector.X;  // Rotate around the Z-axis (yaw)
         RotationDelta.Pitch = -MovementVector.Y; // Rotate around the Y-axis (pitch)
 
-        Mesh->AddLocalRotation(RotationDelta);
+        CurrentMesh->AddLocalRotation(RotationDelta);
 
         GetWorld()->GetTimerManager().SetTimer(TimerHandleForSolutionCheck, this, &AShadowPuzzle::CheckSolution, 1.0f, false);
     }
@@ -121,10 +124,38 @@ void AShadowPuzzle::Interact(const FInputActionValue& Value)
     }
 }
 
+void AShadowPuzzle::ChangeObject(const FInputActionValue& Value)
+{
+    APrzestrzeniePlayerController* PlayerController = Cast<APrzestrzeniePlayerController>(GetWorld()->GetFirstPlayerController());
+    if (bIsSolved || PlayerController->ItemArray.IsEmpty())
+        return;
+
+    if (PlayerController)
+    {
+        CurrentIndex = (CurrentIndex + 1) % PlayerController->ItemArray.Num();
+        int32 value = PlayerController->ItemArray[CurrentIndex]; // Pobierz aktualny element
+
+        switch (value)
+        {
+        case 2:
+            CurrentMesh->SetStaticMesh(Mesh1);
+            break;
+        case 3:
+            CurrentMesh->SetStaticMesh(Mesh2);
+            break;
+        case 4:
+            CurrentMesh->SetStaticMesh(Mesh3);
+            break;
+        default:
+            UE_LOG(LogTemp, Warning, TEXT("Invalid value!"));
+            break;
+        }
+    }
+}
 
 void AShadowPuzzle::CheckSolution()
 {
-    FRotator CurrentRotation = Mesh->GetRelativeRotation();
+    FRotator CurrentRotation = CurrentMesh->GetRelativeRotation();
     if ((FMath::Abs(CurrentRotation.Pitch - Solution.Pitch) <= PossibleOffset &&
         FMath::Abs(CurrentRotation.Yaw - Solution.Yaw) <= PossibleOffset &&
         FMath::Abs(CurrentRotation.Roll - Solution.Roll) <= PossibleOffset)
