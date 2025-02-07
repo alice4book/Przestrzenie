@@ -73,7 +73,6 @@ void AShadowPuzzle::BeginPlay()
 void AShadowPuzzle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AShadowPuzzle::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -87,7 +86,7 @@ void AShadowPuzzle::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
         // Interact
         EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AShadowPuzzle::Interact);
         // Change object
-        EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AShadowPuzzle::ChangeObject);
+        EnhancedInputComponent->BindAction(ChangeObjectAction, ETriggerEvent::Started, this, &AShadowPuzzle::ChangeObject);
     }
 }
 
@@ -130,6 +129,7 @@ void AShadowPuzzle::ChangeObject(const FInputActionValue& Value)
     if (bIsSolved || PlayerController->ItemArray.IsEmpty())
         return;
 
+    FVector2D MovementVector = Value.Get<FVector2D>();
     if (PlayerController)
     {
         CurrentIndex = (CurrentIndex + 1) % PlayerController->ItemArray.Num();
@@ -137,18 +137,24 @@ void AShadowPuzzle::ChangeObject(const FInputActionValue& Value)
 
         switch (value)
         {
-        case 2:
-            CurrentMesh->SetStaticMesh(Mesh1);
-            break;
-        case 3:
-            CurrentMesh->SetStaticMesh(Mesh2);
-            break;
-        case 4:
-            CurrentMesh->SetStaticMesh(Mesh3);
-            break;
-        default:
-            UE_LOG(LogTemp, Warning, TEXT("Invalid value!"));
-            break;
+            case 2:
+                UE_LOG(LogTemp, Warning, TEXT("2"));
+                CurrentMesh->SetStaticMesh(Mesh1);
+                CurrentMesh->SetRelativeScale3D(FVector(0.7f, 0.7f, 0.7f));
+                break;
+            case 3:
+                UE_LOG(LogTemp, Warning, TEXT("3"));
+                CurrentMesh->SetStaticMesh(Mesh2);
+                CurrentMesh->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
+                break;
+            case 4:
+                UE_LOG(LogTemp, Warning, TEXT("4"));
+                CurrentMesh->SetStaticMesh(Mesh3);
+                CurrentMesh->SetRelativeScale3D(FVector(1.4f, 1.4f, 1.4f));
+                break;
+            default:
+                UE_LOG(LogTemp, Warning, TEXT("Invalid value!"));
+                break;
         }
     }
 }
