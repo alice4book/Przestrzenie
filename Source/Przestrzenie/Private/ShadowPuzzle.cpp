@@ -75,21 +75,6 @@ void AShadowPuzzle::BeginPlay()
         {
             Plane = MeshComp;
             Plane->SetVisibility(false); 
-            switch (SolutionSize)
-            {
-            case 2:
-                Plane->SetRelativeScale3D(FVector(1.68f, 1.68f, 1.68f));
-                break;
-            case 3:
-                Plane->SetRelativeScale3D(FVector(2.4f, 2.4f, 2.4f));
-                break;
-            case 4:
-                Plane->SetRelativeScale3D(FVector(3.36f, 3.36f, 3.36f));
-                break;
-            default:
-                UE_LOG(LogTemp, Warning, TEXT("Invalid value!"));
-                break;
-            }
             break;  // Stop searching once we find the component
         }
     }
