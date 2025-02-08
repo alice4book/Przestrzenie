@@ -96,6 +96,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Solution")
 	bool bIsSolved;
 
+	UPROPERTY(EditAnywhere, Category = "Solution")
+	int SolutionSize;
+
+	UPROPERTY(EditAnywhere, Category = "Solution")
+	int CurrentSize = 0;
+
 	int32 CurrentIndex = 0;
 
 	UFUNCTION()

@@ -8,7 +8,6 @@
 #include "Camera/CameraComponent.h"
 #include <EnhancedInputComponent.h>
 #include <Przestrzenie/PrzestrzeniePlayerController.h>
-//#include "TP_PickUpComponent.h"
 
 // Sets default values
 AShadowPuzzle::AShadowPuzzle() : PreviousPawn(nullptr), Solution(FRotator(0.0f, 0.0f, 0.0f)), PossibleOffset(8.0f), bIsSolved(false)
@@ -23,11 +22,6 @@ AShadowPuzzle::AShadowPuzzle() : PreviousPawn(nullptr), Solution(FRotator(0.0f, 
     CurrentMesh->SetupAttachment(Root);
     CurrentMesh->bCastDynamicShadow = true;
     CurrentMesh->CastShadow = true;
-
-    Plane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Plane"));
-    Plane->SetupAttachment(Root);
-    Plane->bCastDynamicShadow = false;
-    Plane->CastShadow = false;
     
     // Create a CameraComponent	
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -49,17 +43,20 @@ AShadowPuzzle::AShadowPuzzle() : PreviousPawn(nullptr), Solution(FRotator(0.0f, 
     Volume->SetupAttachment(Root);
     Volume->InitBoxExtent(FVector(100.0f, 100.0f, 100.0f));
     Volume->SetCollisionProfileName(TEXT("OverlapAll"));
+
+
 }
 
 void AShadowPuzzle::PossesMe()
 {
     // Get the player controller
     APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-    if (PlayerController)
+    if (PlayerController && !bIsSolved)
     {
         PreviousPawn = PlayerController->GetPawn();
         // Possess this actor
         PlayerController->Possess(this);
+        Plane->SetVisibility(true);
     }
 }
 
@@ -67,6 +64,33 @@ void AShadowPuzzle::PossesMe()
 void AShadowPuzzle::BeginPlay()
 {
 	Super::BeginPlay();
+    TArray<UStaticMeshComponent*> MeshComponents;
+    GetComponents<UStaticMeshComponent>(MeshComponents);
+
+    for (UStaticMeshComponent* MeshComp : MeshComponents)
+    {
+        if (MeshComp && MeshComp->GetName() == TEXT("Plane1"))  // Ensure MeshComp is valid
+        {
+            Plane = MeshComp;
+            Plane->SetVisibility(false); 
+            switch (SolutionSize)
+            {
+            case 2:
+                Plane->SetRelativeScale3D(FVector(1.68f, 1.68f, 1.68f));
+                break;
+            case 3:
+                Plane->SetRelativeScale3D(FVector(2.4f, 2.4f, 2.4f));
+                break;
+            case 4:
+                Plane->SetRelativeScale3D(FVector(3.36f, 3.36f, 3.36f));
+                break;
+            default:
+                UE_LOG(LogTemp, Warning, TEXT("Invalid value!"));
+                break;
+            }
+            break;  // Stop searching once we find the component
+        }
+    }
 }
 
 // Called every frame
@@ -118,6 +142,10 @@ void AShadowPuzzle::Interact(const FInputActionValue& Value)
     APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
     if (PlayerController && PreviousPawn)
     {
+        Plane->SetVisibility(false);
+        if (!bIsSolved) {
+            CurrentMesh->SetStaticMesh(nullptr);
+        }
         // Possess this actor
         PlayerController->Possess(PreviousPawn);
     }
@@ -126,29 +154,33 @@ void AShadowPuzzle::Interact(const FInputActionValue& Value)
 void AShadowPuzzle::ChangeObject(const FInputActionValue& Value)
 {
     APrzestrzeniePlayerController* PlayerController = Cast<APrzestrzeniePlayerController>(GetWorld()->GetFirstPlayerController());
-    if (bIsSolved || PlayerController->ItemArray.IsEmpty())
+    if (bIsSolved)
         return;
+    if (PlayerController->ItemArray.IsEmpty()) {
+        UE_LOG(LogTemp, Warning, TEXT("You dont have any objects."));
+        return;
+    }
 
     FVector2D MovementVector = Value.Get<FVector2D>();
     if (PlayerController)
     {
         CurrentIndex = (CurrentIndex + 1) % PlayerController->ItemArray.Num();
-        int32 value = PlayerController->ItemArray[CurrentIndex]; // Pobierz aktualny element
+        CurrentSize = PlayerController->ItemArray[CurrentIndex]; // Pobierz aktualny element
 
-        switch (value)
+        switch (CurrentSize)
         {
             case 2:
-                UE_LOG(LogTemp, Warning, TEXT("2"));
+                //UE_LOG(LogTemp, Warning, TEXT("2"));
                 CurrentMesh->SetStaticMesh(Mesh1);
                 CurrentMesh->SetRelativeScale3D(FVector(0.7f, 0.7f, 0.7f));
                 break;
             case 3:
-                UE_LOG(LogTemp, Warning, TEXT("3"));
+                //UE_LOG(LogTemp, Warning, TEXT("3"));
                 CurrentMesh->SetStaticMesh(Mesh2);
                 CurrentMesh->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
                 break;
             case 4:
-                UE_LOG(LogTemp, Warning, TEXT("4"));
+                //UE_LOG(LogTemp, Warning, TEXT("4"));
                 CurrentMesh->SetStaticMesh(Mesh3);
                 CurrentMesh->SetRelativeScale3D(FVector(1.4f, 1.4f, 1.4f));
                 break;
@@ -162,14 +194,16 @@ void AShadowPuzzle::ChangeObject(const FInputActionValue& Value)
 void AShadowPuzzle::CheckSolution()
 {
     FRotator CurrentRotation = CurrentMesh->GetRelativeRotation();
-    if ((FMath::Abs(CurrentRotation.Pitch - Solution.Pitch) <= PossibleOffset &&
+    if ((SolutionSize == CurrentSize) && ((FMath::Abs(CurrentRotation.Pitch - Solution.Pitch) <= PossibleOffset &&
         FMath::Abs(CurrentRotation.Yaw - Solution.Yaw) <= PossibleOffset &&
         FMath::Abs(CurrentRotation.Roll - Solution.Roll) <= PossibleOffset)
         || (FMath::Abs(CurrentRotation.Pitch - Solution.Pitch) <= PossibleOffset &&
             FMath::Abs(CurrentRotation.Yaw + 180.0f - Solution.Yaw) <= PossibleOffset &&
-            FMath::Abs(CurrentRotation.Roll - Solution.Roll) <= PossibleOffset))
+            FMath::Abs(CurrentRotation.Roll - Solution.Roll) <= PossibleOffset)))
     {
         bIsSolved = true;
+        APrzestrzeniePlayerController* PlayerController = Cast<APrzestrzeniePlayerController>(GetWorld()->GetFirstPlayerController());
+        PlayerController->ItemArray.Remove(CurrentSize);
         GEngine->AddOnScreenDebugMessage(
             -1,
             5.f,
