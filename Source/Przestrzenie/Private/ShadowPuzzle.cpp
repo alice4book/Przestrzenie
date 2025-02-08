@@ -29,6 +29,7 @@ AShadowPuzzle::AShadowPuzzle() : PreviousPawn(nullptr), Solution(FRotator(0.0f, 
     CameraComponent->SetRelativeLocationAndRotation(
         FVector(-38.f, -43.f, -10.f), 
         FRotator(0.0f, 35.0f, 0.0f)); // Position the camera
+    CameraComponent->Deactivate();
     
     SpotLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("SpotLight"));
     SpotLight->SetupAttachment(Root);
@@ -53,6 +54,7 @@ void AShadowPuzzle::PossesMe()
     APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
     if (PlayerController && !bIsSolved)
     {
+        CameraComponent->Activate();
         PreviousPawn = PlayerController->GetPawn();
         // Possess this actor
         PlayerController->Possess(this);
@@ -142,6 +144,7 @@ void AShadowPuzzle::Interact(const FInputActionValue& Value)
     APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
     if (PlayerController && PreviousPawn)
     {
+        CameraComponent->Deactivate();
         Plane->SetVisibility(false);
         if (!bIsSolved) {
             CurrentMesh->SetStaticMesh(nullptr);
