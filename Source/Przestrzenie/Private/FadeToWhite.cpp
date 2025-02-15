@@ -47,12 +47,6 @@ void AFadeToWhite::CheckIfSolved()
 		}
 	}
 
-	GEngine->AddOnScreenDebugMessage(
-		-1,
-		5.f,
-		FColor::Green,
-		TEXT("Checking solution.")
-	);
 }
 
 // Called when the game starts or when spawned
@@ -64,12 +58,6 @@ void AFadeToWhite::BeginPlay()
 	{
 		if (Puzzle)
 		{
-			GEngine->AddOnScreenDebugMessage(
-				-1,
-				5.f,
-				FColor::Green,
-				TEXT("Puzzle.")
-			);
 			Puzzle->OnCheckSolution.AddDynamic(this, &AFadeToWhite::CheckIfSolved);
 		}
 	}
