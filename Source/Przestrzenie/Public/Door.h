@@ -38,6 +38,9 @@ public:
 
 	void Rotate();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door")
+	bool IsOpen;
+
 private:
 	USceneComponent* Root;
 
@@ -54,8 +57,6 @@ private:
 	float RotationSpeed;
 
 	bool IsRotating;
-
-	bool IsOpen;
 
 	float RotationAlpha;
 
