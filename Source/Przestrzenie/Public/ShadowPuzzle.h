@@ -14,6 +14,8 @@ class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCheckSolutionDelegate);
+
 UCLASS()
 class PRZESTRZENIE_API AShadowPuzzle : public APawn
 {
@@ -49,6 +51,11 @@ public:
 	void ChangeObject(const FInputActionValue& Value);
 
 	void PossesMe();
+
+	bool GetIsSolved();
+
+	UPROPERTY()
+	FOnCheckSolutionDelegate OnCheckSolution;
 
 protected:
 	// Called when the game starts or when spawned

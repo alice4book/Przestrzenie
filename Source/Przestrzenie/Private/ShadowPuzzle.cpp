@@ -62,6 +62,11 @@ void AShadowPuzzle::PossesMe()
     }
 }
 
+bool AShadowPuzzle::GetIsSolved()
+{
+    return bIsSolved;
+}
+
 // Called when the game starts or when spawned
 void AShadowPuzzle::BeginPlay()
 {
@@ -199,5 +204,7 @@ void AShadowPuzzle::CheckSolution()
             TEXT("You solved it.")
         );
     }
+
+    OnCheckSolution.Broadcast();
 }
 
