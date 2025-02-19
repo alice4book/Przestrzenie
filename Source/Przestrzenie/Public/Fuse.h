@@ -29,7 +29,7 @@ public:
 
 	int32 GetFuseIndex() const { return FuseIndex; }
 
-	int32 GetSignValue(int32 Side) const { return CurrentRotationSigns[Side]->SignVariant; }
+	int32 GetSignValue(int32 Side) const { return CurrentRotationSigns[Side]; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -41,11 +41,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
 	TArray<int> SignValues;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
-	TArray<ASign*> Signs;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
+	//TArray<ASign*> Signs;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse")
-	TArray<ASign*> CurrentRotationSigns;
+	TArray<int> CurrentRotationSigns;
 
 public:	
 	// Called every frame

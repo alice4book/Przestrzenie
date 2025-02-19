@@ -54,10 +54,10 @@ void AFuse::Rotate()
 	SetActorRotation(NewRotation);
 
 	
-	for (int32 i = 0; i < Signs.Num(); i++)
+	for (int32 i = 0; i < SignValues.Num(); i++)
 	{
-		int32 NewIndex = (i + RotationIndex) % Signs.Num();
-		CurrentRotationSigns[NewIndex] = Signs[i];
+		int32 NewIndex = (i + RotationIndex) % SignValues.Num();
+		CurrentRotationSigns[NewIndex] = SignValues[i];
 	}
 
 	OnRotate.Broadcast();
@@ -74,7 +74,7 @@ void AFuse::BeginPlay()
 	TArray<UChildActorComponent*> ChildActorComponents;
 	GetComponents<UChildActorComponent>(ChildActorComponents);
 
-
+	/*
 	for (UChildActorComponent* ChildActor : ChildActorComponents)
 	{
 		if (ASign* Sign = Cast<ASign>(ChildActor->GetChildActor()))
@@ -96,8 +96,8 @@ void AFuse::BeginPlay()
 			}
 		}
 	}
-
-	CurrentRotationSigns = Signs;
+	*/
+	CurrentRotationSigns = SignValues;
 
 	int randNum = (rand() % 4) + 1;
 
@@ -123,10 +123,10 @@ void AFuse::Tick(float DeltaTime)
 			RotationAlpha = 1.0f;
 			IsRotating = false;
 			RotationIndex = (RotationIndex + 1) % 4;
-			for (int32 i = 0; i < Signs.Num(); i++)
+			for (int32 i = 0; i < SignValues.Num(); i++)
 			{
-				int32 NewIndex = (i + RotationIndex) % Signs.Num();
-				CurrentRotationSigns[NewIndex] = Signs[i];
+				int32 NewIndex = (i + RotationIndex) % SignValues.Num();
+				CurrentRotationSigns[NewIndex] = SignValues[i];
 			}
 
 			OnRotate.Broadcast();

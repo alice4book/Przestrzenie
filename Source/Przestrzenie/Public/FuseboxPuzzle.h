@@ -50,6 +50,7 @@ public:
 
 	void SpawnFuses();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
 	bool isSolved = false;
 
 protected:
