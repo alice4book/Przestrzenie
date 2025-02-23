@@ -6,6 +6,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include <EnhancedInputComponent.h>
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
 
 // Sets default values
 ADoor::ADoor()
@@ -52,6 +54,19 @@ void ADoor::Interact()
 		if (PC->ItemArray.Contains(1)) //1 is the id of a key
 		{
 			IsRotating = true;
+			// Play door opening sound (if set in BP)
+			if (OpenSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, OpenSound, GetActorLocation());
+			}
+		}
+		else
+		{
+			// Play locked sound when player doesn't have the key (if set in BP)
+			if (LockedSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, LockedSound, GetActorLocation());
+			}
 		}
 	}
 }
