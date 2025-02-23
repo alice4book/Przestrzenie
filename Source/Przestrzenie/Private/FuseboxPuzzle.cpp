@@ -49,11 +49,14 @@ void AFuseboxPuzzle::PossesMe()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController)
 	{
+
 		PreviousPawn = PlayerController->GetPawn();
 		PlayerController->Possess(this);
 
 		PlayerController->bShowMouseCursor = true;
 		PlayerController->bEnableClickEvents = true;
+
+		isInteracting = true;
 	}
 }
 
@@ -77,6 +80,8 @@ void AFuseboxPuzzle::Interact(const FInputActionValue& Value)
 		PlayerController->bEnableClickEvents = false;
 
 		PlayerController->Possess(PreviousPawn);
+
+		isInteracting = false;
 	}
 }
 
