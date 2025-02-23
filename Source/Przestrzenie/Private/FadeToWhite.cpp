@@ -15,6 +15,7 @@ void AFadeToWhite::Fade()
 {
 	if (FadeSequence)
 	{
+		
 		ALevelSequenceActor* SequenceActor;
 		ULevelSequencePlayer* SequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(
 			GetWorld(), FadeSequence, FMovieSceneSequencePlaybackSettings(), SequenceActor
@@ -22,6 +23,8 @@ void AFadeToWhite::Fade()
 
 		if (SequencePlayer)
 		{
+			isFading = true;
+			OnVariableChanged.Broadcast(isFading);
 			SequencePlayer->Play();
 		}
 	}

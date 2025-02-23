@@ -10,6 +10,8 @@
 #include "LevelSequenceActor.h"
 #include "FadeToWhite.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVariableChanged, bool, NewValue);
+
 UCLASS()
 class PRZESTRZENIE_API AFadeToWhite : public AActor
 {
@@ -33,6 +35,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FadeToWhite")
+	bool isFading = false;
+
+	UPROPERTY(BlueprintAssignable, Category = "FadeToWhite")
+	FOnVariableChanged OnVariableChanged;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FadeToWhite")
 	TArray<AShadowPuzzle*> ShadowPuzzles;
