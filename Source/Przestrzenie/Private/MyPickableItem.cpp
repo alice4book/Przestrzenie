@@ -23,7 +23,7 @@ AMyPickableItem::AMyPickableItem()
 	Mesh->CastShadow = true;
 
 	Volume = CreateDefaultSubobject<UBoxComponent>(TEXT("Volume"));
-	Volume->SetupAttachment(Root);
+	Volume->SetupAttachment(Mesh);
 	Volume->InitBoxExtent(FVector(100.0f, 100.0f, 100.0f));
 	Volume->SetCollisionProfileName(TEXT("OverlapAll"));
 
