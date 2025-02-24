@@ -30,6 +30,12 @@ void AFadeToWhite::Fade()
 	}
 }
 
+void AFadeToWhite::Steam()
+{
+	isSteaming = true;
+	OnVariable2Changed.Broadcast(isSteaming);
+}
+
 void AFadeToWhite::CheckIfSolved()
 {
 	int32 bSolvedNr = 0;
@@ -45,8 +51,12 @@ void AFadeToWhite::CheckIfSolved()
 
 		if (bSolvedNr == ShadowPuzzles.Num())
 		{
+			GetWorld()->GetTimerManager().ClearTimer(TimerHandleForSteam);
+			GetWorld()->GetTimerManager().SetTimer(TimerHandleForSteam, this, &AFadeToWhite::Steam, 4.0f, false);
+
 			GetWorld()->GetTimerManager().ClearTimer(TimerHandleForFade);
-			GetWorld()->GetTimerManager().SetTimer(TimerHandleForFade, this, &AFadeToWhite::Fade, 10.0f, false);
+			GetWorld()->GetTimerManager().SetTimer(TimerHandleForFade, this, &AFadeToWhite::Fade, 7.0f, false);
+		
 		}
 	}
 

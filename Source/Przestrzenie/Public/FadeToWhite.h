@@ -11,6 +11,7 @@
 #include "FadeToWhite.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVariableChanged, bool, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnVariable2Changed, bool, NewValue);
 
 UCLASS()
 class PRZESTRZENIE_API AFadeToWhite : public AActor
@@ -23,6 +24,8 @@ public:
 
 	void Fade();
 
+	void Steam();
+
 	UFUNCTION()
 	void CheckIfSolved();
 
@@ -32,6 +35,8 @@ protected:
 
 	FTimerHandle TimerHandleForFade;
 
+	FTimerHandle TimerHandleForSteam;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -39,8 +44,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FadeToWhite")
 	bool isFading = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FadeToWhite")
+	bool isSteaming = false;
+
 	UPROPERTY(BlueprintAssignable, Category = "FadeToWhite")
 	FOnVariableChanged OnVariableChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "FadeToWhite")
+	FOnVariableChanged OnVariable2Changed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FadeToWhite")
 	TArray<AShadowPuzzle*> ShadowPuzzles;
