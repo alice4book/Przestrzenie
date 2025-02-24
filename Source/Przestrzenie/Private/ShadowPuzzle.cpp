@@ -59,6 +59,8 @@ void AShadowPuzzle::PossesMe()
         // Possess this actor
         PlayerController->Possess(this);
         Plane->SetVisibility(true);
+
+        isInteracting = true;
     }
 }
 
@@ -141,6 +143,8 @@ void AShadowPuzzle::Interact(const FInputActionValue& Value)
         }
         // Possess this actor
         PlayerController->Possess(PreviousPawn);
+
+        isInteracting = false;
     }
 }
 

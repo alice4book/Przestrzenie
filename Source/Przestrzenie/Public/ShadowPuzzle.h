@@ -57,6 +57,9 @@ public:
 	UPROPERTY()
 	FOnCheckSolutionDelegate OnCheckSolution;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Puzzle")
+	bool isInteracting = false;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
