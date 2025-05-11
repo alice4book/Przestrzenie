@@ -85,6 +85,27 @@ void AFuseboxPuzzle::Interact(const FInputActionValue& Value)
 	}
 }
 
+void AFuseboxPuzzle::InteractSolved()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController && PreviousPawn && isInteracting)
+	{
+		PlayerController->bShowMouseCursor = false;
+		PlayerController->bEnableClickEvents = false;
+
+		PlayerController->Possess(PreviousPawn);
+
+		isInteracting = false;
+
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			5.f,
+			FColor::Green,
+			TEXT("InteractSolved")
+		);
+	}
+}
+
 void AFuseboxPuzzle::CheckSolution()
 {
 
@@ -154,6 +175,12 @@ void AFuseboxPuzzle::CheckSolution()
 		RemoveDarkness();
 
 		isSolved = true;
+
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandleInteractSolved);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandleInteractSolved, this, &AFuseboxPuzzle::InteractSolved, 1.0f, false);
+
+
+
 	}
 
 

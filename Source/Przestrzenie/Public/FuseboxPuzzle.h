@@ -45,6 +45,8 @@ public:
 
 	void Interact(const FInputActionValue& Value);
 
+	void InteractSolved();
+
 	UFUNCTION()
 	void CheckSolution();
 
@@ -59,6 +61,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	FTimerHandle TimerHandleInteractSolved;
 
 public:	
 	// Called every frame
